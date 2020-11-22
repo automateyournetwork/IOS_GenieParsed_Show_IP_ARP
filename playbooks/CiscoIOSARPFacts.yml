@@ -21,18 +21,6 @@
       delegate_to: localhost
       run_once: true   
 
-# Run Show VRF and register results #
-    - name: show vrf
-      ios_command:
-        commands:
-          - show vrf
-      register: all_vrfs_raw
-
-# Genie Parse results and set variable with JSON
-    - name: Set Fact Genie Filter - get VRFs
-      set_fact:
-        pyats_all_vrfs: "{{ all_vrfs_raw['stdout'][0] | parse_genie(command='show vrf', os='ios') }}"
-
 # Run Show IP ARP and register results #
     - name: show ip arp 
       ios_command:
