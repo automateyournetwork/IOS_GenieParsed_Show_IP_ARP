@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Markmap</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+#mindmap {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+</style>
+
+</head>
+<body>
+<svg id="mindmap"></svg>
+<script src="https://cdn.jsdelivr.net/npm/d3@6.2.0"></script><script src="https://cdn.jsdelivr.net/npm/markmap-view@0.1.1"></script><script>((getMarkmap, data) => {
+        const {
+          Markmap
+        } = getMarkmap();
+        window.mm = Markmap.create('svg#mindmap', null, data);
+      })(() => window.markmap,{"t":"heading","d":1,"p":{},"v":"Show IP ARP Facts for DISTRIBUTION01 Global Routing Table","c":[{"t":"thead","d":3,"p":{},"v":"","c":[{"t":"th","d":5,"p":{},"v":"Interface"},{"t":"th","d":5,"p":{},"v":"Neighbor IP Address"},{"t":"th","d":5,"p":{},"v":"Neighbor IP Address"},{"t":"th","d":5,"p":{},"v":"MAC Address"},{"t":"th","d":5,"p":{},"v":"Type"},{"t":"th","d":5,"p":{},"v":"Origin"},{"t":"th","d":5,"p":{},"v":"Age"},{"t":"th","d":5,"p":{},"v":"Protocol"}]},{"t":"tbody","d":3,"p":{},"v":"","c":[{"t":"tr","d":4,"p":{},"v":"","c":[{"t":"td","d":5,"p":{},"v":"Port-channel1"},{"t":"td","d":5,"p":{},"v":"172.20.1.100"},{"t":"td","d":5,"p":{},"v":"172.20.1.100"},{"t":"td","d":5,"p":{},"v":"0000.00ff.ffff"},{"t":"td","d":5,"p":{},"v":"ARPA"},{"t":"td","d":5,"p":{},"v":"dynamic"},{"t":"td","d":5,"p":{},"v":"8"},{"t":"td","d":5,"p":{},"v":"Internet"},{"t":"td","d":5,"p":{},"v":"172.20.1.200"},{"t":"td","d":5,"p":{},"v":"172.20.1.200"},{"t":"td","d":5,"p":{},"v":"0001.11ff.ffff"},{"t":"td","d":5,"p":{},"v":"ARPA"},{"t":"td","d":5,"p":{},"v":"static"},{"t":"td","d":5,"p":{},"v":"-"},{"t":"td","d":5,"p":{},"v":"Internet"}]},{"t":"tr","d":4,"p":{},"v":"","c":[{"t":"td","d":5,"p":{},"v":"Vlan10"},{"t":"td","d":5,"p":{},"v":"172.24.1.254"},{"t":"td","d":5,"p":{},"v":"172.24.1.254"},{"t":"td","d":5,"p":{},"v":"000e.eeff.feee"},{"t":"td","d":5,"p":{},"v":"ARPA"},{"t":"td","d":5,"p":{},"v":"static"},{"t":"td","d":5,"p":{},"v":"-"},{"t":"td","d":5,"p":{},"v":"Internet"}]},{"t":"tr","d":4,"p":{},"v":"","c":[{"t":"td","d":5,"p":{},"v":"Vlan20"},{"t":"td","d":5,"p":{},"v":"172.24.2.1"},{"t":"td","d":5,"p":{},"v":"172.24.2.1"},{"t":"td","d":5,"p":{},"v":"8888.88ff.ffff"},{"t":"td","d":5,"p":{},"v":"ARPA"},{"t":"td","d":5,"p":{},"v":"static"},{"t":"td","d":5,"p":{},"v":"-"},{"t":"td","d":5,"p":{},"v":"Internet"}]},{"t":"tr","d":4,"p":{},"v":""}]}]})</script>
+</body>
+</html>

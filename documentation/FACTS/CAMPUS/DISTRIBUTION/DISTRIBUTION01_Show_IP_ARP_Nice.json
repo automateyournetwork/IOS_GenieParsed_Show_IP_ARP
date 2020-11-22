@@ -1,0 +1,54 @@
+{
+    "interfaces": {
+        "Port-channel1": {
+            "ipv4": {
+                "neighbors": {
+                    "172.20.1.100": {
+                        "age": "8",
+                        "ip": "172.20.1.100",
+                        "link_layer_address": "0000.00ff.ffff",
+                        "origin": "dynamic",
+                        "protocol": "Internet",
+                        "type": "ARPA"
+                    },
+                    "172.20.1.200": {
+                        "age": "-",
+                        "ip": "172.20.1.200",
+                        "link_layer_address": "0001.11ff.ffff",
+                        "origin": "static",
+                        "protocol": "Internet",
+                        "type": "ARPA"
+                    }
+                }
+            }
+        },
+        "Vlan10": {
+            "ipv4": {
+                "neighbors": {
+                    "172.24.1.254": {
+                        "age": "-",
+                        "ip": "172.24.1.254",
+                        "link_layer_address": "000e.eeff.feee",
+                        "origin": "static",
+                        "protocol": "Internet",
+                        "type": "ARPA"
+                    }
+                }
+            }
+        },
+        "Vlan20": {
+            "ipv4": {
+                "neighbors": {
+                    "172.24.2.1": {
+                        "age": "-",
+                        "ip": "172.24.2.1",
+                        "link_layer_address": "8888.88ff.ffff",
+                        "origin": "static",
+                        "protocol": "Internet",
+                        "type": "ARPA"
+                    }
+                }
+            }
+        }
+    }
+}

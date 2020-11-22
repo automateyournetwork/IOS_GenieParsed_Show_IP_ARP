@@ -1,0 +1,275 @@
+---
+
+- hosts: CampusDist
+# Include Clays Collection # 
+# https://github.com/clay584/parse_genie #  
+  collections:
+    - clay584.genie
+  vars_prompt:
+    - name: IOS_User_Prompt
+      prompt: "Enter Cisco IOS Username"
+      private: no 
+    - name: IOS_Password_Prompt
+      prompt: "Enter IOS Password"
+      private: yes   
+  tasks:
+# Register Username and Password #
+    - set_fact:   
+        ios_user: "{{ IOS_User_Prompt }}"     
+        ios_password: "{{ IOS_Password_Prompt }}"
+      no_log: true
+      delegate_to: localhost
+      run_once: true   
+
+# Run Show VRF and register results #
+    - name: show vrf
+      ios_command:
+        commands:
+          - show vrf
+      register: all_vrfs_raw
+
+# Genie Parse results and set variable with JSON
+    - name: Set Fact Genie Filter - get VRFs
+      set_fact:
+        pyats_all_vrfs: "{{ all_vrfs_raw['stdout'][0] | parse_genie(command='show vrf', os='ios') }}"
+
+# Run Show IP ARP and register results #
+    - name: show ip arp 
+      ios_command:
+        commands:
+          - show ip arp
+      register: ip_arp_raw
+
+    - name: Set Fact Genie Filter - get VRFs
+      set_fact:
+        pyats_ip_arp: "{{ ip_arp_raw['stdout'][0] | parse_genie(command='show ip arp', os='ios') }}"
+
+# Create RAW JSON, Nice JSON, Nice YAML Files #
+# Create JSON file with Ansible Facts #
+    - name: Create RAW JSON file
+      copy: 
+        content: | 
+          {{ pyats_ip_arp }}
+        dest: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP_RAW.json
+
+# Create JSON file with Ansible Facts #
+    - name: Create raw JSON file
+      copy: 
+        content: | 
+          {{ pyats_ip_arp | to_nice_json }}
+        dest: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP_Nice.json
+
+# Create YAML file with Ansible Facts #
+    - name: Create raw YAML
+      copy: 
+        content: | 
+          {{ pyats_ip_arp | to_nice_yaml }}
+        dest: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.yml
+
+# Add Headers to YAML #
+    - name: Header Row
+      lineinfile:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.yml
+        insertbefore: BOF
+        line: ---        
+      delegate_to: localhost    
+      
+# Create CSV File #
+# Remove file #
+    - name: Remove file (delete file)
+      file:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.csv
+        state: absent
+
+# Create Interface CSV file with results #
+    - name: CSV Data Row
+      lineinfile:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.csv
+        line: "{{ item.key }},{{ item.value.ipv4.neighbors }}"
+        create: yes
+      loop: "{{ pyats_ip_arp.interfaces | dict2items }}"
+
+# Format CSV #
+    - name: Format CSV File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.csv       
+        regexp: "'"
+        replace: ''
+ 
+# Format CSV #
+    - name: Format CSV File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.csv       
+        regexp: " link_layer_address: "
+        replace: ''
+
+# Format CSV #
+    - name: Format CSV File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.csv       
+        regexp: " type: "
+        replace: ''
+
+# Format CSV #
+    - name: Format CSV File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.csv       
+        regexp: " origin: "
+        replace: ''
+
+# Format CSV #
+    - name: Format CSV File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.csv       
+        regexp: " age: "
+        replace: ''        
+
+# Format CSV #
+    - name: Format CSV File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.csv       
+        regexp: " protocol: "
+        replace: ''  
+
+# Format CSV #
+    - name: Format CSV File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.csv       
+        regexp: "{"
+        replace: '' 
+
+# Format CSV #
+    - name: Format CSV File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.csv       
+        regexp: "}"
+        replace: ''      
+
+# Format CSV #
+    - name: Format CSV File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.csv       
+        regexp: ": ip: "
+        replace: ','  
+
+# Add Header Row to CSV #
+    - name: CSV Header Row
+      lineinfile:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.csv       
+        insertbefore: BOF
+        line: Interface,Neighbor IP Address,Neighbor IP Address,MAC Address,Type,Origin,Age,Protocol
+
+# Create Markdown File #
+# Remove file #
+    - name: Remove file (delete file)
+      file:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md
+        state: absent
+
+# Create Interface Markdown file with results #
+    - name: Markdown Data Row
+      lineinfile:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md
+        line: "{{ item.key }},{{ item.value.ipv4.neighbors }}"
+        create: yes
+      loop: "{{ pyats_ip_arp.interfaces | dict2items }}"
+
+# Format Markdown #
+    - name: Format Markdown File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md       
+        regexp: "'"
+        replace: ''
+ 
+# Format Markdown #
+    - name: Format Markdown File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md       
+        regexp: " link_layer_address: "
+        replace: ''
+
+# Format Markdown #
+    - name: Format Markdown File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md       
+        regexp: " type: "
+        replace: ''
+
+# Format Markdown #
+    - name: Format Markdown File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md       
+        regexp: " origin: "
+        replace: ''
+
+# Format Markdown #
+    - name: Format Markdown File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md       
+        regexp: " age: "
+        replace: ''        
+
+# Format Markdown #
+    - name: Format Markdown File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md       
+        regexp: " protocol: "
+        replace: ''  
+
+# Format Markdown #
+    - name: Format Markdown File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md       
+        regexp: "{"
+        replace: '' 
+
+# Format Markdown #
+    - name: Format Markdown File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md       
+        regexp: "}"
+        replace: ''      
+
+# Format Markdown #
+    - name: Format Markdown File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md       
+        regexp: ": ip: "
+        replace: ','  
+
+# Format MD #
+    - name: Format MD File Clean Up
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md       
+        regexp: ","
+        replace: " | "
+
+# Format Markdown #
+    - name: Format Markdown File New Lines
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md 
+        regexp: '^'
+        replace: '| '
+  
+# Format Markdown #
+    - name: Format Markdown File New Lines
+      replace:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md 
+        regexp: '$'
+        replace: ' |' 
+
+# Add Header Rows to Markdown #
+    - name: Markdown Header Row
+      lineinfile:
+        path: ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md     
+        insertbefore: BOF
+        line: "{{ item.property }}"
+      with_items:
+        - { property: '| --------- | ------------------- | ------------------- | ----------- | ---- | ------ | --- | -------- |' }
+        - { property: '| Interface | Neighbor IP Address | Neighbor IP Address | MAC Address | Type | Origin | Age | Protocol |' }
+        - { property: '# Show IP ARP Facts for {{ inventory_hostname }} Global Routing Table' }      
+
+# Create Mind Map # 
+    - name: create Distribution VRF Mind Map 
+      shell: "npx markmap-cli ../documentation/FACTS/CAMPUS/DISTRIBUTION/{{ inventory_hostname }}_Show_IP_ARP.md"
+      register: markmap     
